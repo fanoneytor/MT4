@@ -17,8 +17,10 @@ input int rachaDe2 = 13;
 //Variables Globales
 
 int counter2 = 0;// Contador para poner arrow en la vela #2 que se especifique en el parametro rachaDe2
-double auxHigh = 0; //Variable que guarda el high mas alto entre las velas #3
-double auxLow = 1000000; //Variable que guarda el low mas bajo entre las velas #3
+double maxHigh = 0; //Variable que guarda el high mas alto entre las velas #3
+double maxHigh1 = 0;
+double minLow = 1000000; //Variable que guarda el low mas bajo entre las velas #3
+double minLow1 = 1000000;
 
 //+------------------------------------------------------------------+
 //|Funcion que se ejecuta concada tick.
@@ -95,17 +97,29 @@ void DibujarNumeros(int i, string numero, datetime date, double low, color c)
 //+-----------------------------------------------------------------------------------+
 void LineasHorizontales(int i, double high, double low)
   {
-   if(high >= auxHigh)
+   if(high >= maxHigh)
      {
       ObjectCreate("HLineHigh"+(string)i,OBJ_HLINE,0,0,high);
       ObjectSetInteger(0,"HLineHigh"+(string)i,OBJPROP_COLOR,Lime);
-      auxHigh = high;
+      maxHigh = high;
      }
-   if(low <= auxLow)
+   if(high < maxHigh && high >= maxHigh1)
+     {
+      ObjectCreate("HLineHigh"+(string)i,OBJ_HLINE,0,0,high);
+      ObjectSetInteger(0,"HLineHigh"+(string)i,OBJPROP_COLOR,Lime);
+      maxHigh1 = high;
+     }
+   if(low <= minLow)
      {
       ObjectCreate("HLineLow"+(string)i,OBJ_HLINE,0,0,low);
       ObjectSetInteger(0,"HLineLow"+(string)i,OBJPROP_COLOR,Lime);
-      auxLow = low;
+      minLow = low;
+     }
+     if(low > minLow && low <= minLow1)
+     {
+      ObjectCreate("HLineLow"+(string)i,OBJ_HLINE,0,0,low);
+      ObjectSetInteger(0,"HLineLow"+(string)i,OBJPROP_COLOR,Lime);
+      minLow1 = low;
      }
   }
 //+------------------------------------------------------------------+
