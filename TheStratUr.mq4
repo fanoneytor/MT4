@@ -17,10 +17,7 @@ input int rachaDe2 = 13;
 //Variables Globales
 
 int counter2 = 0;// Contador para poner arrow en la vela #2 que se especifique en el parametro rachaDe2
-double maxHigh = 0; //Variable que guarda el high mas alto entre las velas #3
-double maxHigh1 = 0;
-double minLow = 1000000; //Variable que guarda el low mas bajo entre las velas #3
-double minLow1 = 1000000;
+double lineas[]= {0, 0, 1000000, 1000000};
 
 //+------------------------------------------------------------------+
 //|Funcion que se ejecuta concada tick.
@@ -57,7 +54,7 @@ void TheStratNumbers()
       if(high>high1 && low<low1)
         {
          DibujarNumeros(i, "3", date, low, Lime);
-         LineasHorizontales(i, high, low);
+         AnalisisLineas(high, low);
          counter2 = 0;
         }
       else
@@ -80,6 +77,14 @@ void TheStratNumbers()
               }
            }
      }
+   for(int i=0; i<4; i++)
+     {
+      DibujarLineaH(i, lineas[i]);
+     }
+     lineas[0]=0;
+     lineas[1]=0;
+     lineas[2]=1000000;
+     lineas[3]=1000000;
   }
 
 
@@ -91,35 +96,29 @@ void DibujarNumeros(int i, string numero, datetime date, double low, color c)
    ObjectCreate("numero"+(string)i,OBJ_TEXT,0,date, low);
    ObjectSetText("numero"+(string)i, numero, FontSize, "Tahoma", c);
   }
-
-//+-----------------------------------------------------------------------------------+
-//|Dibuja las lineas horizontales en el mayor High y el menor low de los #3.
-//+-----------------------------------------------------------------------------------+
-void LineasHorizontales(int i, double high, double low)
+//+------------------------------------------------------------------+
+//|Dibuja Linea Horizontal
+//+------------------------------------------------------------------+
+void DibujarLineaH(int i, double posicion)
   {
-   if(high >= maxHigh)
+   ObjectCreate("HLineHigh"+(string)i,OBJ_HLINE,0,0,posicion);
+   ObjectSetInteger(0,"HLineHigh"+(string)i,OBJPROP_COLOR,Lime);
+  }
+
+//+------------------------------------------------------------------------------------------------+
+//|Llena un vector con los valores de las 2 lineas mas altas y las dos mas bajas de las velas #3
+//+------------------------------------------------------------------------------------------------+
+void AnalisisLineas(double high, double low)
+  {
+   if(high > lineas[0])
      {
-      ObjectCreate("HLineHigh"+(string)i,OBJ_HLINE,0,0,high);
-      ObjectSetInteger(0,"HLineHigh"+(string)i,OBJPROP_COLOR,Lime);
-      maxHigh = high;
+      lineas[1]=lineas[0];
+      lineas[0] = high;
      }
-   if(high < maxHigh && high >= maxHigh1)
+   if(low < lineas[2])
      {
-      ObjectCreate("HLineHigh"+(string)i,OBJ_HLINE,0,0,high);
-      ObjectSetInteger(0,"HLineHigh"+(string)i,OBJPROP_COLOR,Lime);
-      maxHigh1 = high;
-     }
-   if(low <= minLow)
-     {
-      ObjectCreate("HLineLow"+(string)i,OBJ_HLINE,0,0,low);
-      ObjectSetInteger(0,"HLineLow"+(string)i,OBJPROP_COLOR,Lime);
-      minLow = low;
-     }
-     if(low > minLow && low <= minLow1)
-     {
-      ObjectCreate("HLineLow"+(string)i,OBJ_HLINE,0,0,low);
-      ObjectSetInteger(0,"HLineLow"+(string)i,OBJPROP_COLOR,Lime);
-      minLow1 = low;
+      lineas[3] = lineas[2];
+      lineas[2] = low;
      }
   }
 //+------------------------------------------------------------------+
