@@ -10,20 +10,25 @@
 
 //Parametros de la interfaz.
 
+input double Volumen = 0.01;
+input double SlPoints = 50;
+input double TpPoints = 75;
 input int FontSize = 21;
 input int BarsNumber = 21;
 input int rachaDe2 = 13;
+input int OrdenesPorVela = 3;
 
 //Variables Globales
 
 int counter2 = 0;// Contador para poner arrow en la vela #2 que se especifique en el parametro rachaDe2
 double lineas[]= {0, 0, 1000000, 1000000};
-
+double BarsCount = 0;
 //+------------------------------------------------------------------+
 //|Funcion que se ejecuta concada tick.
 //+------------------------------------------------------------------+
 void OnTick()
   {
+   SendOrder();
    TheStratNumbers();
   }
 
@@ -81,10 +86,10 @@ void TheStratNumbers()
      {
       DibujarLineaH(i, lineas[i]);
      }
-     lineas[0]=0;
-     lineas[1]=0;
-     lineas[2]=1000000;
-     lineas[3]=1000000;
+   lineas[0]=0;
+   lineas[1]=0;
+   lineas[2]=1000000;
+   lineas[3]=1000000;
   }
 
 
@@ -119,6 +124,38 @@ void AnalisisLineas(double high, double low)
      {
       lineas[3] = lineas[2];
       lineas[2] = low;
+     }
+  }
+//+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
+void SendOrder()
+  {
+   double open = iOpen(Symbol(),0, 1);
+   double close = iClose(Symbol(), 0, 1);
+   
+   double slb = NormalizeDouble(Ask - SlPoints * Point, Digits);
+   double tpb = NormalizeDouble(Ask + TpPoints * Point, Digits);
+   
+   double sls = NormalizeDouble(Bid + SlPoints * Point, Digits);
+   double tps = NormalizeDouble(Bid - TpPoints * Point, Digits);
+   
+   int ticket;
+   
+   if(Bars > BarsCount && close > open)
+     {
+      for(int i=0; i<OrdenesPorVela; i++)
+        {
+         ticket = OrderSend(Symbol(), OP_BUY, Volumen, Ask, 0, slb, tpb, "Compra con bot", 0, 0,NULL);
+        }
+      BarsCount = Bars;
+     }
+   if(Bars > BarsCount && close < open)
+     {
+      for(int i=0; i<OrdenesPorVela; i++)
+        {
+         ticket = OrderSend(Symbol(), OP_SELL, Volumen, Bid, 0, sls, tps, "Venta con bot", 0, 0, NULL);
+        }
+      BarsCount = Bars;
      }
   }
 //+------------------------------------------------------------------+
